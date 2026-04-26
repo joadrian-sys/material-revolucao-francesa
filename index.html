@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revolução Francesa — Material Didático Interativo</title>
+<style>
+/* ============================================================
+   RESET & VARIÁVEIS
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #242837;
+  --surface3: #2e3345;
+  --accent: #5b8af5;
+  --accent2: #7c5cf5;
+  --accent-glow: rgba(91,138,245,.25);
+  --green: #34d399;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --text: #e8eaed;
+  --text2: #9ca3af;
+  --text3: #6b7280;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,.4);
+  --transition: .25s cubic-bezier(.4,0,.2,1);
+}
+
+html { scroll-behavior: smooth; font-size: 18px; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   NAVEGAÇÃO PRINCIPAL
+   ============================================================ */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(15,17,23,.85);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--surface2);
+  padding: .55rem .8rem;
+}
+
+.nav-inner {
+  max-width: 1100px; margin: auto;
+  display: flex; gap: .4rem;
+  overflow-x: auto; scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+
+.nav-btn {
+  flex-shrink: 0;
+  background: var(--surface);
+  color: var(--text2);
+  border: 1px solid var(--surface2);
+  padding: .45rem .9rem;
+  border-radius: 999px;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.nav-btn:hover, .nav-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 18px var(--accent-glow);
+}
+
+/* ============================================================
+   CONTAINER & SEÇÕES
+   ============================================================ */
+.container { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+.section { display: none; animation: fadeUp .4s ease; }
+.section.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: .3rem;
+}
+h2 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 2rem 0 .8rem;
+  display: flex; align-items: center; gap: .5rem;
+}
+h2 .icon { font-size: 1.5rem; }
+
+h3 {
+  font-size: 1.1rem;
+  color: var(--accent);
+  margin: 1.2rem 0 .4rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: var(--text2);
+  font-size: .95rem;
+  margin-bottom: 1.6rem;
+}
+
+/* ============================================================
+   CARDS GENÉRICOS
+   ============================================================ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--surface2);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.3rem;
+  margin-bottom: 1rem;
+  transition: var(--transition);
+}
+.card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* ============================================================
+   A) RESUMO GUIADO
+   ============================================================ */
+.topic-list { list-style: none; }
+.topic-list li {
+  position: relative;
+  padding: .55rem 0 .55rem 1.6rem;
+  border-bottom: 1px solid var(--surface2);
+  font-size: .95rem;
+}
+.topic-list li:last-child { border-bottom: none; }
+.topic-list li::before {
+  content: '▸';
+  position: absolute; left: 0;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* glossário */
+.glossary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: .8rem;
+}
+.gloss-card {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: .9rem 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+.gloss-card:hover {
+  border-color: var(--accent2);
+  background: var(--surface3);
+}
+.gloss-term {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: .95rem;
+  margin-bottom: .2rem;
+}
+.gloss-def {
+  color: var(--text2);
+  font-size: .85rem;
+  display: none;
+  margin-top: .35rem;
+  line-height: 1.5;
+}
+.gloss-card.open .gloss-def { display: block; }
+.gloss-hint {
+  font-size: .72rem;
+  color: var(--text3);
+  margin-top: .15rem;
+}
+.gloss-card.open .gloss-hint { display: none; }
+
+/* ============================================================
+   B) LINHA DO TEMPO
+   ============================================================ */
+.timeline { position: relative; padding-left: 2.2rem; }
+.timeline::before {
+  content: '';
+  position: absolute; left: .85rem; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent2));
+  border-radius: 4px;
+}
+
+.tl-item {
+  position: relative;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+.tl-dot {
+  position: absolute;
+  left: -1.55rem; top: 1.15rem;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 10px var(--accent-glow);
+  transition: var(--transition);
+}
+.tl-item:hover .tl-dot { transform: scale(1.35); }
+.tl-item.open .tl-dot { background: var(--accent2); }
+
+.tl-card {
+  background: var(--surface);
+  border: 1px solid var(--surface2);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  transition: var(--transition);
+}
+.tl-item:hover .tl-card,
+.tl-item.open .tl-card {
+  border-color: var(--accent);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+.tl-date {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.tl-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin: .15rem 0;
+}
+.tl-detail {
+  display: none;
+  font-size: .88rem;
+  color: var(--text2);
+  margin-top: .5rem;
+  line-height: 1.55;
+  border-top: 1px solid var(--surface2);
+  padding-top: .5rem;
+}
+.tl-item.open .tl-detail { display: block; }
+
+/* ============================================================
+   C) QUIZ
+   ============================================================ */
+.progress-bar-container {
+  background: var(--surface2);
+  border-radius: 999px;
+  height: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width .4s ease;
+  width: 0;
+}
+
+.score-display {
+  display: flex; gap: 1rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  font-size: .9rem;
+}
+.score-ok { color: var(--green); }
+.score-err { color: var(--red); }
+
+.quiz-question-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.quiz-options { list-style: none; }
+.quiz-options li {
+  background: var(--surface2);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: .75rem 1rem;
+  margin-bottom: .55rem;
+  cursor: pointer;
+  font-size: .92rem;
+  transition: var(--transition);
+}
+.quiz-options li:hover:not(.disabled) {
+  border-color: var(--accent);
+  background: var(--surface3);
+}
+.quiz-options li.correct {
+  border-color: var(--green);
+  background: rgba(52,211,153,.12);
+}
+.quiz-options li.wrong {
+  border-color: var(--red);
+  background: rgba(248,113,113,.12);
+}
+.quiz-options li.disabled { cursor: default; opacity: .7; }
+
+.quiz-feedback {
+  margin-top: .8rem;
+  font-size: .88rem;
+  padding: .8rem 1rem;
+  border-radius: var(--radius-sm);
+  display: none;
+}
+.quiz-feedback.show { display: block; }
+.quiz-feedback.ok {
+  background: rgba(52,211,153,.1);
+  border-left: 4px solid var(--green);
+  color: var(--green);
+}
+.quiz-feedback.nok {
+  background: rgba(248,113,113,.1);
+  border-left: 4px solid var(--red);
+  color: var(--red);
+}
+
+.quiz-nav {
+  display: flex; gap: .6rem;
+  margin-top: 1.2rem;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   D) DISSERTATIVAS
+   ============================================================ */
+.diss-question {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: .5rem;
+}
+.diss-answer {
+  display: none;
+  margin-top: .7rem;
+  padding: .9rem 1rem;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  font-size: .88rem;
+  line-height: 1.6;
+  border-left: 4px solid var(--accent2);
+}
+.diss-answer.show { display: block; }
+.diss-answer strong { color: var(--accent); }
+
+.criteria {
+  margin-top: .5rem;
+  list-style: none;
+}
+.criteria li {
+  padding: .2rem 0;
+  padding-left: 1.2rem;
+  position: relative;
+  font-size: .85rem;
+  color: var(--text2);
+}
+.criteria li::before {
+  content: '✓';
+  position: absolute; left: 0;
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* ============================================================
+   E) MAPA DE REVISÃO
+   ============================================================ */
+.revision-list {
+  list-style: none;
+  counter-reset: rev;
+}
+.revision-list li {
+  counter-increment: rev;
+  padding: .75rem 1rem .75rem 3.2rem;
+  position: relative;
+  border-bottom: 1px solid var(--surface2);
+  font-size: .95rem;
+}
+.revision-list li:last-child { border-bottom: none; }
+.revision-list li::before {
+  content: counter(rev);
+  position: absolute; left: .8rem; top: .7rem;
+  width: 1.7rem; height: 1.7rem;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  font-weight: 800;
+  font-size: .78rem;
+  border-radius: 50%;
+}
+
+/* ============================================================
+   BOTÕES
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .6rem 1.3rem;
+  border: none;
+  border-radius: 999px;
+  font-size: .85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+}
+.btn-primary:hover { box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--surface3);
+}
+.btn-secondary:hover { border-color: var(--accent); }
+.btn-danger {
+  background: rgba(248,113,113,.15);
+  color: var(--red);
+}
+.btn-danger:hover { background: rgba(248,113,113,.25); }
+
+/* ============================================================
+   BADGE / TAG
+   ============================================================ */
+.badge {
+  display: inline-block;
+  padding: .15rem .6rem;
+  border-radius: 999px;
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  background: var(--accent);
+  color: #fff;
+}
+.badge.fire {
+  background: linear-gradient(135deg, #f97316, #ef4444);
+}
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+@media (max-width: 600px) {
+  html { font-size: 16px; }
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.2rem; }
+  .container { padding: 1rem .7rem 3rem; }
+  .glossary-grid { grid-template-columns: 1fr; }
+  .timeline { padding-left: 1.8rem; }
+}
+
+/* resultado final do quiz */
+.quiz-result {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+.quiz-result .big-score {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.quiz-result .msg {
+  font-size: 1.1rem;
+  color: var(--text2);
+  margin: .5rem 0 1.5rem;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVEGAÇÃO
+     ============================================================ -->
+<nav>
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showSection('resumo')">📖 Resumo</button>
+    <button class="nav-btn" onclick="showSection('timeline')">📅 Linha do Tempo</button>
+    <button class="nav-btn" onclick="showSection('quiz')">❓ Quiz</button>
+    <button class="nav-btn" onclick="showSection('dissertativas')">✍️ Dissertativas</button>
+    <button class="nav-btn" onclick="showSection('revisao')">🔥 Revisão</button>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- ============================================================
+       A) RESUMO GUIADO
+       ============================================================ -->
+  <div id="resumo" class="section active">
+    <h1>Revolução Francesa (1789–1799)</h1>
+    <p class="subtitle">Material didático interativo — Ensino Médio</p>
+
+    <h2><span class="icon">⚡</span> Causas da Revolução</h2>
+    <div class="card">
+      <ul class="topic-list">
+        <li><strong>Crise financeira:</strong> a França estava endividada após guerras (incluindo apoio à Independência dos EUA) e gastos excessivos da Corte em Versalhes.</li>
+        <li><strong>Desigualdade tributária:</strong> o 3º Estado (burguesia, camponeses, trabalhadores) pagava quase todos os impostos, enquanto clero e nobreza tinham isenções.</li>
+        <li><strong>Más colheitas (1788):</strong> escassez de alimentos elevou o preço do pão, agravando a fome popular.</li>
+        <li><strong>Iluminismo:</strong> pensadores como Voltaire, Rousseau e Montesquieu questionaram o absolutismo e defenderam liberdade, igualdade e separação de poderes.</li>
+        <li><strong>Exemplo americano:</strong> a Independência dos EUA (1776) mostrou que era possível derrubar o domínio monárquico.</li>
+      </ul>
+    </div>
+
+    <h2><span class="icon">🏛️</span> Estados Gerais e Assembleia Nacional</h2>
+    <div class="card">
+      <ul class="topic-list">
+        <li>Em maio de 1789, Luís XVI convocou os <strong>Estados Gerais</strong> para resolver a crise fiscal.</li>
+        <li>O 3º Estado exigiu voto por cabeça (em vez de voto por ordem) e foi recusado.</li>
+        <li>Os deputados do 3º Estado se autoproclamaram <strong>Assembleia Nacional</strong> e juraram não se dispersar até dar à França uma Constituição (<strong>Juramento do Jogo da Péla</strong>, 20 de junho de 1789).</li>
+      </ul>
+    </div>
+
+    <h2><span class="icon">💥</span> Queda da Bastilha</h2>
+    <div class="card">
+      <ul class="topic-list">
+        <li>Em <strong>14 de julho de 1789</strong>, o povo de Paris invadiu a Bastilha, prisão-fortaleza símbolo do absolutismo.</li>
+        <li>O evento marcou o início violento da Revolução e tornou-se feriado nacional francês.</li>
+      </ul>
+    </div>
+
+    <h2><span class="icon">📜</span> Fases da Revolução</h2>
+    <div class="card">
+      <ul class="topic-list">
+        <li><strong>Monarquia Constitucional (1789–1792):</strong> Declaração dos Direitos do Homem e do Cidadão; Constituição de 1791; rei perde poder absoluto.</li>
+        <li><strong>República e radicalização (1792–1794):</strong> proclamação da República; execução de Luís XVI (jan. 1793); domínio jacobino liderado por Robespierre; <strong>Período do Terror</strong> — milhares guilhotinados.</li>
+        <li><strong>Reação Termidoriana e Diretório (1794–1799):</strong> queda de Robespierre (9 Termidor); governo moderado do Diretório, marcado por corrupção e instabilidade.</li>
+      </ul>
+    </div>
+
+    <h2><span class="icon">⚔️</span> Golpe do 18 Brumário</h2>
+    <div class="card">
+      <ul class="topic-list">
+        <li>Em <strong>9 de novembro de 1799</strong> (18 Brumário no calendário republicano), o general <strong>Napoleão Bonaparte</strong> derrubou o Diretório num golpe de Estado.</li>
+        <li>Foi instituído o Consulado; Napoleão tornou-se Primeiro-Cônsul e, depois, Imperador (1804).</li>
+        <li>Encerrou-se oficialmente a Revolução Francesa, mas seus ideais (liberdade, igualdade, fraternidade) se espalharam pelo mundo.</li>
+      </ul>
+    </div>
+
+    <!-- GLOSSÁRIO -->
+    <h2><span class="icon">📚</span> Mini Glossário</h2>
+    <p style="color:var(--text3);font-size:.82rem;margin-bottom:.7rem;">Clique no termo para ver a definição.</p>
+    <div class="glossary-grid" id="glossary"></div>
+  </div>
+
+  <!-- ============================================================
+       B) LINHA DO TEMPO
+       ============================================================ -->
+  <div id="timeline" class="section">
+    <h1>Linha do Tempo</h1>
+    <p class="subtitle">Clique em cada evento para ver os detalhes</p>
+    <div class="timeline" id="timelineContainer"></div>
+  </div>
+
+  <!-- ============================================================
+       C) QUIZ
+       ============================================================ -->
+  <div id="quiz" class="section">
+    <h1>Quiz — 10 questões</h1>
+    <p class="subtitle">Teste seus conhecimentos sobre a Revolução Francesa</p>
+
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="score-display">
+      <span class="score-ok" id="scoreOk">✔ Acertos: 0</span>
+      <span class="score-err" id="scoreErr">✖ Erros: 0</span>
+      <span style="color:var(--text3);" id="scoreOf">| Questão 1 de 10</span>
+    </div>
+
+    <div class="card" id="quizCard"></div>
+  </div>
+
+  <!-- ============================================================
+       D) DISSERTATIVAS
+       ============================================================ -->
+  <div id="dissertativas" class="section">
+    <h1>Exercícios Dissertativos</h1>
+    <p class="subtitle">Pratique a escrita — clique para ver a sugestão de resposta e os critérios</p>
+    <div id="dissContainer"></div>
+  </div>
+
+  <!-- ============================================================
+       E) MAPA DE REVISÃO
+       ============================================================ -->
+  <div id="revisao" class="section">
+    <h1>🔥 Cai Muito em Prova</h1>
+    <p class="subtitle">10 pontos que você PRECISA saber</p>
+    <div class="card">
+      <ol class="revision-list">
+        <li>A sociedade francesa era dividida em <strong>3 Estados</strong>: Clero (1º), Nobreza (2º) e o 3º Estado (burguesia + camponeses + trabalhadores urbanos).</li>
+        <li><strong>Causas principais:</strong> crise financeira, desigualdade tributária, más colheitas de 1788, influência do Iluminismo e da Independência dos EUA.</li>
+        <li>A <strong>Queda da Bastilha</strong> (14/07/1789) é o marco simbólico do início da Revolução.</li>
+        <li>A <strong>Declaração dos Direitos do Homem e do Cidadão</strong> (1789) consagrou liberdade, igualdade e propriedade como direitos naturais.</li>
+        <li>O <strong>lema</strong> da Revolução — <em>Liberdade, Igualdade, Fraternidade</em> — influenciou movimentos no mundo todo.</li>
+        <li>Luís XVI foi julgado e <strong>guilhotinado</strong> em janeiro de 1793, marcando o fim definitivo da monarquia absoluta francesa.</li>
+        <li>O <strong>Terror</strong> (1793–1794) foi comandado pelos jacobinos; Robespierre liderou execuções em massa para "defender a República".</li>
+        <li>A <strong>Reação Termidoriana</strong> (1794) derrubou Robespierre e instalou o Diretório, governo moderado e instável.</li>
+        <li>O <strong>Golpe do 18 Brumário</strong> (1799) levou Napoleão Bonaparte ao poder e encerrou a Revolução.</li>
+        <li>A Revolução Francesa é considerada o <strong>marco de transição</strong> da Idade Moderna para a Idade Contemporânea.</li>
+      </ol>
+    </div>
+  </div>
+
+</div><!-- /.container -->
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ==============================================================
+   NAVEGAÇÃO ENTRE SEÇÕES
+   ============================================================== */
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ==============================================================
+   A) GLOSSÁRIO — dados e render
+   ============================================================== */
+const glossaryData = [
+  { term: 'Antigo Regime', def: 'Sistema político, social e econômico vigente na França antes de 1789, baseado no absolutismo monárquico e nos privilégios de clero e nobreza.' },
+  { term: '3º Estado', def: 'Parcela da sociedade que incluía a burguesia, camponeses e trabalhadores urbanos — cerca de 97% da população — e arcava com quase toda a carga tributária.' },
+  { term: 'Sans-culottes', def: 'Trabalhadores urbanos pobres de Paris, chamados assim porque usavam calças compridas em vez dos culotes (calções) da aristocracia. Foram a base popular da Revolução.' },
+  { term: 'Jacobinos', def: 'Grupo político radical liderado por Robespierre. Defendiam a república, o sufrágio universal masculino e medidas sociais. Lideraram o Período do Terror (1793–1794).' },
+  { term: 'Girondinos', def: 'Grupo político moderado ligado à alta burguesia. Defendiam a república, mas se opunham à radicalização jacobina. Muitos foram guilhotinados durante o Terror.' },
+  { term: 'Guilhotina', def: 'Instrumento de execução por decapitação adotado na Revolução como forma "igualitária" de pena de morte. Tornou-se símbolo do Terror.' },
+  { term: 'Constituição', def: 'Lei fundamental que organiza o Estado e garante direitos. A Constituição de 1791 transformou a França em monarquia constitucional; a de 1793 (jacobina) nunca foi aplicada.' },
+  { term: 'Sufrágio', def: 'Direito de voto. Na Revolução, debateu-se entre sufrágio censitário (só quem tinha renda) e universal masculino (todos os homens adultos).' }
+];
+
+(function renderGlossary() {
+  const container = document.getElementById('glossary');
+  glossaryData.forEach(g => {
+    const div = document.createElement('div');
+    div.className = 'gloss-card';
+    div.innerHTML = `
+      <div class="gloss-term">${g.term}</div>
+      <div class="gloss-hint">toque para ver ▾</div>
+      <div class="gloss-def">${g.def}</div>`;
+    div.addEventListener('click', () => div.classList.toggle('open'));
+    container.appendChild(div);
+  });
+})();
+
+/* ==============================================================
+   B) LINHA DO TEMPO — dados e render
+   ============================================================== */
+const timelineData = [
+  { date: '5 de maio de 1789', title: 'Abertura dos Estados Gerais', detail: 'Luís XVI convocou os Estados Gerais em Versalhes para resolver a crise financeira. O 3º Estado reivindicou voto por cabeça, mas foi recusado, iniciando o conflito político.' },
+  { date: '20 de junho de 1789', title: 'Juramento do Jogo da Péla', detail: 'Impedidos de entrar na sala dos Estados Gerais, os deputados do 3º Estado reuniram-se numa quadra de jogos e juraram não se separar até dar à França uma Constituição.' },
+  { date: '14 de julho de 1789', title: 'Queda da Bastilha', detail: 'O povo de Paris invadiu a fortaleza-prisão da Bastilha em busca de armas e pólvora. O evento tornou-se o marco simbólico do início da Revolução e é feriado nacional na França até hoje.' },
+  { date: '26 de agosto de 1789', title: 'Declaração dos Direitos do Homem e do Cidadão', detail: 'A Assembleia Nacional aprovou o documento que consagrou princípios de liberdade, igualdade, propriedade e resistência à opressão. Inspirado no Iluminismo e na Declaração de Independência dos EUA.' },
+  { date: '5-6 de outubro de 1789', title: 'Marcha das Mulheres sobre Versalhes', detail: 'Milhares de mulheres (e homens armados) marcharam até Versalhes exigindo pão. Forçaram a família real a se mudar para Paris, enfraquecendo a autoridade do rei.' },
+  { date: '3 de setembro de 1791', title: 'Constituição de 1791', detail: 'A França tornou-se uma monarquia constitucional. O rei perdeu o poder absoluto e o voto censitário foi adotado (só cidadãos "ativos" com renda mínima podiam votar).' },
+  { date: '21 de setembro de 1792', title: 'Proclamação da República', detail: 'Após a invasão das Tulherias e a prisão de Luís XVI, a Convenção Nacional aboliu a monarquia e proclamou a Primeira República Francesa.' },
+  { date: '21 de janeiro de 1793', title: 'Execução de Luís XVI', detail: 'Luís XVI foi julgado por traição e guilhotinado na Praça da Revolução (atual Praça da Concórdia) em Paris. A execução chocou a Europa e desencadeou guerras contra a França.' },
+  { date: 'Set 1793 – Jul 1794', title: 'Período do Terror', detail: 'Sob liderança de Robespierre e do Comitê de Salvação Pública, o governo jacobino executou milhares de "inimigos da Revolução" na guilhotina — incluindo a rainha Maria Antonieta e vários girondinos.' },
+  { date: '27 de julho de 1794', title: 'Queda de Robespierre (9 Termidor)', detail: 'Membros da Convenção conspiraram e prenderam Robespierre, que foi guilhotinado no dia seguinte. Fim do Terror e início da Reação Termidoriana, que levou ao governo moderado do Diretório.' },
+  { date: '2 de novembro de 1795', title: 'Início do Diretório', detail: 'Nova Constituição criou o Diretório — poder executivo composto por 5 diretores. O governo enfrentou corrupção, instabilidade e dependia cada vez mais do apoio militar.' },
+  { date: '9 de novembro de 1799', title: 'Golpe do 18 Brumário', detail: 'O general Napoleão Bonaparte derrubou o Diretório em um golpe de Estado. O Consulado foi instituído e Napoleão tornou-se Primeiro-Cônsul, encerrando oficialmente a Revolução Francesa.' }
+];
+
+(function renderTimeline() {
+  const container = document.getElementById('timelineContainer');
+  timelineData.forEach(ev => {
+    const div = document.createElement('div');
+    div.className = 'tl-item';
+    div.innerHTML = `
+      <div class="tl-dot"></div>
+      <div class="tl-card">
+        <div class="tl-date">${ev.date}</div>
+        <div class="tl-title">${ev.title}</div>
+        <div class="tl-detail">${ev.detail}</div>
+      </div>`;
+    div.addEventListener('click', () => div.classList.toggle('open'));
+    container.appendChild(div);
+  });
+})();
+
+/* ==============================================================
+   C) QUIZ — dados e lógica
+   ============================================================== */
+const quizData = [
+  {
+    q: 'Qual era a principal reivindicação do 3º Estado nos Estados Gerais de 1789?',
+    opts: ['Manter o voto por ordem', 'Voto por cabeça', 'Abolir a guilhotina', 'Coroar Napoleão'],
+    answer: 1,
+    explain: 'O 3º Estado queria voto por cabeça porque era maioria (~97% da população), o que lhe daria vantagem sobre clero e nobreza se os votos fossem individuais.'
+  },
+  {
+    q: 'A Queda da Bastilha ocorreu em:',
+    opts: ['14 de julho de 1789', '4 de julho de 1776', '21 de janeiro de 1793', '9 de novembro de 1799'],
+    answer: 0,
+    explain: '14 de julho de 1789 é o marco simbólico do início da Revolução Francesa e até hoje é feriado nacional na França.'
+  },
+  {
+    q: 'A Declaração dos Direitos do Homem e do Cidadão (1789) foi influenciada principalmente por qual corrente de pensamento?',
+    opts: ['Mercantilismo', 'Iluminismo', 'Positivismo', 'Romantismo'],
+    answer: 1,
+    explain: 'O Iluminismo, com pensadores como Rousseau, Voltaire e Montesquieu, defendia liberdade, igualdade e separação de poderes — bases da Declaração.'
+  },
+  {
+    q: 'Quem liderou o Período do Terror (1793–1794)?',
+    opts: ['Napoleão Bonaparte', 'Luís XVI', 'Robespierre', 'Montesquieu'],
+    answer: 2,
+    explain: 'Maximilien de Robespierre liderou o Comitê de Salvação Pública e comandou a fase mais radical da Revolução, com execuções em massa.'
+  },
+  {
+    q: 'O que foi o Golpe do 18 Brumário?',
+    opts: ['Queda da Bastilha', 'Execução de Luís XVI', 'Golpe de Estado de Napoleão que derrubou o Diretório', 'Proclamação da República'],
+    answer: 2,
+    explain: 'Em 9 de novembro de 1799 (18 Brumário no calendário republicano), Napoleão derrubou o Diretório e instaurou o Consulado, encerrando a Revolução.'
+  },
+  {
+    q: 'Os sans-culottes eram:',
+    opts: ['Nobres que apoiavam o rei', 'Membros do clero liberal', 'Trabalhadores urbanos pobres de Paris', 'Soldados do exército napoleônico'],
+    answer: 2,
+    explain: 'Os sans-culottes (literalmente "sem culotes") eram trabalhadores e artesãos pobres de Paris que usavam calças compridas, e não os culotes da aristocracia.'
+  },
+  {
+    q: 'Qual fase veio logo após o Período do Terror?',
+    opts: ['Monarquia Constitucional', 'Reação Termidoriana e Diretório', 'Consulado', 'Império Napoleônico'],
+    answer: 1,
+    explain: 'Após a queda de Robespierre (9 Termidor, julho de 1794), ocorreu a Reação Termidoriana, que levou ao governo moderado do Diretório (1795–1799).'
+  },
+  {
+    q: 'A Constituição de 1791 transformou a França em:',
+    opts: ['República federativa', 'Monarquia constitucional', 'Ditadura militar', 'Democracia direta'],
+    answer: 1,
+    explain: 'A Constituição de 1791 manteve o rei, mas limitou seu poder — a França passou de monarquia absoluta para monarquia constitucional.'
+  },
+  {
+    q: 'Qual das alternativas NÃO é uma causa da Revolução Francesa?',
+    opts: ['Crise financeira e dívidas de guerra', 'Influência do Iluminismo', 'Invasão napoleônica da Rússia', 'Desigualdade tributária entre os Estados'],
+    answer: 2,
+    explain: 'A invasão da Rússia ocorreu em 1812, muito depois do início da Revolução (1789). É um evento do Período Napoleônico, não uma causa da Revolução.'
+  },
+  {
+    q: 'A Revolução Francesa é considerada o marco de transição entre quais períodos históricos?',
+    opts: ['Antiguidade e Idade Média', 'Idade Média e Idade Moderna', 'Idade Moderna e Idade Contemporânea', 'Idade Contemporânea e Pós-modernidade'],
+    answer: 2,
+    explain: 'A Revolução Francesa (1789) é o marco convencional do fim da Idade Moderna e início da Idade Contemporânea na periodização clássica da história.'
+  }
+];
+
+let quizIndex = 0, quizScore = 0, quizErrors = 0;
+let quizAnswered = new Array(quizData.length).fill(null); // armazena a resposta dada
+
+function renderQuiz() {
+  const card = document.getElementById('quizCard');
+  const total = quizData.length;
+
+  // resultado final
+  if (quizIndex >= total && quizAnswered.filter(a => a !== null).length === total) {
+    showResult(); return;
+  }
+
+  const q = quizData[quizIndex];
+  const answered = quizAnswered[quizIndex];
+
+  let html = `<div class="quiz-question-text">${quizIndex + 1}. ${q.q}</div><ul class="quiz-options">`;
+  q.opts.forEach((opt, i) => {
+    let cls = '';
+    if (answered !== null) {
+      if (i === q.answer) cls = 'correct disabled';
+      else if (i === answered && answered !== q.answer) cls = 'wrong disabled';
+      else cls = 'disabled';
+    }
+    html += `<li class="${cls}" data-i="${i}">${String.fromCharCode(65 + i)}) ${opt}</li>`;
+  });
+  html += '</ul>';
+
+  // feedback
+  if (answered !== null) {
+    const isCorrect = answered === q.answer;
+    html += `<div class="quiz-feedback show ${isCorrect ? 'ok' : 'nok'}">${isCorrect ? '✔ Correto!' : '✖ Errado!'} ${q.explain}</div>`;
+  }
+
+  // navegação
+  html += '<div class="quiz-nav">';
+  if (quizIndex > 0) html += '<button class="btn btn-secondary" onclick="quizPrev()">◀ Voltar</button>';
+  if (answered !== null && quizIndex < total - 1) html += '<button class="btn btn-primary" onclick="quizNext()">Próxima ▶</button>';
+  if (answered !== null && quizIndex === total - 1) html += '<button class="btn btn-primary" onclick="quizNext()">Ver Resultado ▶</button>';
+  html += '<button class="btn btn-danger" onclick="quizReset()">↺ Reiniciar</button>';
+  html += '</div>';
+
+  card.innerHTML = html;
+
+  // clique nas opções
+  if (answered === null) {
+    card.querySelectorAll('.quiz-options li').forEach(li => {
+      li.addEventListener('click', function() { selectAnswer(parseInt(this.dataset.i)); });
+    });
+  }
+
+  // atualizar barra e score
+  const answeredCount = quizAnswered.filter(a => a !== null).length;
+  document.getElementById('progressBar').style.width = (answeredCount / total * 100) + '%';
+  document.getElementById('scoreOk').textContent = '✔ Acertos: ' + quizScore;
+  document.getElementById('scoreErr').textContent = '✖ Erros: ' + quizErrors;
+  document.getElementById('scoreOf').textContent = '| Questão ' + (quizIndex + 1) + ' de ' + total;
+}
+
+function selectAnswer(i) {
+  const q = quizData[quizIndex];
+  quizAnswered[quizIndex] = i;
+  if (i === q.answer) quizScore++; else quizErrors++;
+  renderQuiz();
+}
+
+function quizNext() { quizIndex++; renderQuiz(); }
+function quizPrev() { if (quizIndex > 0) { quizIndex--; renderQuiz(); } }
+
+function quizReset() {
+  quizIndex = 0; quizScore = 0; quizErrors = 0;
+  quizAnswered = new Array(quizData.length).fill(null);
+  renderQuiz();
+}
+
+function showResult() {
+  const total = quizData.length;
+  const pct = Math.round(quizScore / total * 100);
+  let msg = '';
+  if (pct === 100) msg = 'Perfeito! Você dominou o conteúdo! 🏆';
+  else if (pct >= 70) msg = 'Ótimo desempenho! Continue assim! 💪';
+  else if (pct >= 50) msg = 'Bom, mas dá pra melhorar. Revise os pontos que errou! 📖';
+  else msg = 'Precisa revisar mais! Volte ao resumo e tente de novo. 📚';
+
+  const card = document.getElementById('quizCard');
+  card.innerHTML = `
+    <div class="quiz-result">
+      <div class="big-score">${quizScore}/${total}</div>
+      <div class="msg">${msg}</div>
+      <span class="score-ok">✔ Acertos: ${quizScore}</span>&nbsp;&nbsp;
+      <span class="score-err">✖ Erros: ${quizErrors}</span>
+      <br><br>
+      <button class="btn btn-primary" onclick="quizReset()">↺ Fazer de novo</button>
+    </div>`;
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('scoreOf').textContent = '| Resultado final';
+}
+
+// render inicial
+renderQuiz();
+
+/* ==============================================================
+   D) DISSERTATIVAS — dados e render
+   ============================================================== */
+const dissData = [
+  {
+    q: '1. Explique como a crise financeira e a desigualdade social na França contribuíram para a eclosão da Revolução Francesa.',
+    answer: 'A França estava profundamente endividada após guerras e gastos da Corte. Os impostos recaíam quase exclusivamente sobre o 3º Estado (burguesia, camponeses e trabalhadores), enquanto clero e nobreza gozavam de isenções. As más colheitas de 1788 elevaram o preço do pão, gerando fome e revolta popular. Essa combinação de crise econômica, injustiça tributária e miséria social tornou o Antigo Regime insustentável e alimentou a mobilização revolucionária.',
+    criteria: [
+      'Mencionar a dívida do Estado e os gastos da Corte.',
+      'Destacar a desigualdade tributária (3º Estado pagava mais; clero e nobreza eram isentos).',
+      'Relacionar a crise de subsistência (más colheitas / preço do pão) com a revolta popular.'
+    ]
+  },
+  {
+    q: '2. Compare os girondinos e os jacobinos: quais eram suas posições políticas e como se deu a disputa entre eles?',
+    answer: 'Os girondinos representavam a alta burguesia e defendiam uma república moderada, com preservação de liberdades econômicas e menor interferência estatal. Os jacobinos, liderados por Robespierre, representavam a pequena burguesia e tinham apoio popular (sans-culottes); defendiam medidas radicais como tabelamento de preços e sufrágio universal masculino. A disputa entre eles acirrou-se na Convenção: os jacobinos acusaram os girondinos de traição à República, e muitos girondinos foram presos e guilhotinados durante o Período do Terror (1793–1794).',
+    criteria: [
+      'Diferenciar as bases sociais (girondinos = alta burguesia; jacobinos = pequena burguesia + apoio popular).',
+      'Contrastar as posições: moderação (girondinos) × radicalismo (jacobinos).',
+      'Explicar que os jacobinos eliminaram os girondinos durante o Terror.'
+    ]
+  },
+  {
+    q: '3. Qual a importância da Declaração dos Direitos do Homem e do Cidadão (1789) para a história dos direitos humanos?',
+    answer: 'A Declaração estabeleceu que todos os homens nascem livres e iguais em direitos, consagrando princípios como liberdade, propriedade, segurança e resistência à opressão. Inspirada no Iluminismo (Rousseau, Montesquieu, Voltaire) e na Declaração de Independência dos EUA, ela serviu de modelo para futuras constituições e para a própria Declaração Universal dos Direitos Humanos (ONU, 1948). Representou uma ruptura com o Antigo Regime ao substituir privilégios de nascimento por direitos naturais universais.',
+    criteria: [
+      'Citar os princípios centrais (liberdade, igualdade, propriedade, resistência à opressão).',
+      'Mencionar a influência do Iluminismo e/ou da Independência dos EUA.',
+      'Apontar seu legado para documentos posteriores (constituições modernas, Declaração Universal da ONU).'
+    ]
+  },
+  {
+    q: '4. O que foi o Período do Terror e por que ele é considerado uma contradição dentro dos ideais revolucionários?',
+    answer: 'O Terror (setembro de 1793 – julho de 1794) foi a fase mais radical da Revolução, em que o Comitê de Salvação Pública, liderado por Robespierre, utilizou a guilhotina para eliminar supostos "inimigos da República" — incluindo girondinos, nobres, padres e até aliados jacobinos. É considerado contraditório porque a Revolução nasceu defendendo liberdade e direitos individuais, mas o Terror suprimiu essas mesmas liberdades em nome da defesa da República, instaurando um regime de medo e execuções sumárias.',
+    criteria: [
+      'Definir o período (1793–1794) e o papel de Robespierre / Comitê de Salvação Pública.',
+      'Explicar os métodos (guilhotina, execuções em massa, tribunais revolucionários).',
+      'Apontar a contradição: ideais de liberdade × supressão de direitos durante o Terror.'
+    ]
+  },
+  {
+    q: '5. De que forma a Revolução Francesa influenciou outros movimentos no mundo, inclusive no Brasil?',
+    answer: 'Os ideais de liberdade, igualdade e fraternidade inspiraram movimentos de independência na América Latina e revoltas no Brasil, como a Conjuração Baiana (1798), que teve forte influência das ideias francesas de igualdade racial e social. A Revolução também serviu de referência para a construção de repúblicas e constituições modernas, difundiu o conceito de soberania popular e influenciou o fim do absolutismo em diversos países europeus ao longo do século XIX.',
+    criteria: [
+      'Citar o lema "Liberdade, Igualdade, Fraternidade" como influência global.',
+      'Dar pelo menos um exemplo concreto de movimento influenciado (ex.: Conjuração Baiana, independências na América Latina, Revolução Haitiana).',
+      'Destacar o impacto na formação de repúblicas e constituições modernas.'
+    ]
+  }
+];
+
+(function renderDiss() {
+  const container = document.getElementById('dissContainer');
+  dissData.forEach((d, idx) => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    let critHtml = d.criteria.map(c => `<li>${c}</li>`).join('');
+    div.innerHTML = `
+      <div class="diss-question">${d.q}</div>
+      <button class="btn btn-primary" onclick="toggleDiss(this)">Mostrar sugestão de resposta</button>
+      <div class="diss-answer" id="diss-${idx}">
+        <strong>Sugestão de resposta:</strong><br>${d.answer}
+        <br><br><strong>Critérios (o que não pode faltar):</strong>
+        <ul class="criteria">${critHtml}</ul>
+      </div>`;
+    container.appendChild(div);
+  });
+})();
+
+function toggleDiss(btn) {
+  const answer = btn.nextElementSibling;
+  const showing = answer.classList.toggle('show');
+  btn.textContent = showing ? 'Ocultar resposta' : 'Mostrar sugestão de resposta';
+}
+</script>
+</body>
+</html>
